@@ -1,3 +1,12 @@
+# Deepcoder implementation for leader election in distributed systems
+Originally forked from https://github.com/dkamm/deepcoder
+
+---
+
+Original readme below
+
+---
+
 # Deepcoder
 Pure python 3 implementation of DeepCoder (https://arxiv.org/pdf/1611.01989.pdf)
 
