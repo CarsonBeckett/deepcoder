@@ -1,9 +1,9 @@
 """!
 
-@brief Examples of usage and demonstration of abilities of K-Medoids algorithm in cluster analysis.
+@brief Filip Hörnsten's Bachelor degree project 2018
 
-@authors Andrei Novikov (pyclustering@yandex.ru)
-@date 2014-2018
+@authors Filip Hörnsten
+@date 2018
 @copyright GNU Public License
 
 @cond GNU_PUBLIC_LICENSE
@@ -20,10 +20,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @endcond
-
-Filip Hörnsten
-Bachelor degree project 2018
-
 """
 
 from pyclustering.samples.definitions import SIMPLE_SAMPLES, FCPS_SAMPLES;
