@@ -61,58 +61,65 @@ def cluster_nodes():
     # K-medoids clustering using points as data
     
     # Get the nodes sample from the data file
-    samplePath = os.path.dirname(os.path.abspath("kmedoids_cluster_nodes.py")) + os.sep + "nodes1.data"
-    sample = read_sample(samplePath)
-    print(samplePath)
-    print(sample)
-
-    # Use Manhattan distance
-    metric = distance_metric(type_metric.MANHATTAN);
+    # samplePath = os.path.dirname(os.path.abspath("kmedoids_cluster_nodes.py")) + os.sep + "nodes-test1.data"
     
-    # Initiate the k-medoids algorithm with the sample and the initial medoids
-    initial_medoids = [8, 12, 17];
-    kmedoids_instance = kmedoids(sample, initial_medoids, 0.25, metric=metric);
+    scenarios = ["scenario1.data", "scenario2.data", "scenario3.data"]
+    #initial_medoids = [[8, 12, 17, 25], [8, 12, 17, 25], [8, 12, 22, 28]];
+    initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25]];
 
-    # Run clustering and print results
-    kmedoids_instance.process();
-    clusters = kmedoids_instance.get_clusters();
-    medoids = kmedoids_instance.get_medoids();
-    print("Clusters: ", clusters);
-    print("Medoids: ", medoids)
+    for index in range(0, len(scenarios)):
+        samplePath = os.path.dirname(os.path.abspath("kmedoids_cluster_nodes.py")) + os.sep + scenarios[index]
+        sample = read_sample(samplePath)
+        print(samplePath)
+        print(sample)
 
-    # Generate visualisation
-    visualizer = cluster_visualizer(1, titles=["K-medoids clustering of nodes"]);
-    visualizer.append_clusters(clusters, sample, 0);
-    visualizer.append_cluster([ sample[index] for index in initial_medoids ], marker = '*', markersize = 15);
-    visualizer.append_cluster(medoids, data=sample, marker='*', markersize=15, color="black");
-    visualizer.show(visible_axis = False, visible_grid = False);
+        # Use Manhattan distance
+        metric = distance_metric(type_metric.MANHATTAN);
+        
+        # Initiate the k-medoids algorithm with the sample and the initial medoids
+        kmedoids_instance = kmedoids(sample, initial_medoids[index], 0.001, metric=metric);
 
-    # Post-processing
-    
-    # Calculate Manhattan distance from medoid to all points in the cluster
-    metric = distance_metric(type_metric.MANHATTAN);
-    distanceList = []
-    print("Number of clusters: ", len(clusters))
-    for index in range(0, len(clusters)):
-        print("Index: ", index)
-        medoidPoint = sample[medoids[index]]
-        print("Medoid point array: ", medoidPoint)
-        print("Cluster index array: ", clusters[index])
-        for currentClusterIndex in clusters[index]:
-            # Make sure not to compare the medoid to itself
-            if medoids[index] != currentClusterIndex:
-                # Get the point array of the current cluster to compare to the medoid
-                currentClusterPoint = sample[currentClusterIndex]
-                print("Current cluster point from sample:", currentClusterPoint)
-                
-                # Calculate the Manhattan distance between the medoid and the current point to compare with
-                distance = metric(medoidPoint, currentClusterPoint)
+        # Run clustering and print results
+        kmedoids_instance.process();
+        clusters = kmedoids_instance.get_clusters();
+        medoids = kmedoids_instance.get_medoids();
+        print("Clusters: ", clusters);
+        print("Medoids: ", medoids)
 
-                # Append the result to a list as the index of the medoid, the index of the current point and the distance between them
-                distanceList.append([medoids[index], currentClusterIndex, distance])
-                print("Distance between ", medoidPoint, " and ", currentClusterPoint, " is: ", distance)
+        # Generate visualisation
+        title = "K-medoids clustering - Scenario " + str(index+1)
+        visualizer = cluster_visualizer(1, titles=[title]);
+        visualizer.append_clusters(clusters, sample, 0);
+        #visualizer.append_cluster([ sample[index] for index in initial_medoids[index] ], marker = '*', markersize = 15);
+        visualizer.append_cluster(medoids, data=sample, marker='*', markersize=15, color="black");
+        visualizer.show(visible_axis = False, visible_grid = False);
 
-    print(distanceList)
+        # Post-processing
+        
+        # Calculate Manhattan distance from medoid to all points in the cluster
+        metric = distance_metric(type_metric.MANHATTAN);
+        distanceList = []
+        print("Number of clusters: ", len(clusters))
+        for index in range(0, len(clusters)):
+            print("Index: ", index)
+            medoidPoint = sample[medoids[index]]
+            print("Medoid point array: ", medoidPoint)
+            print("Cluster index array: ", clusters[index])
+            for currentClusterIndex in clusters[index]:
+                # Make sure not to compare the medoid to itself
+                if medoids[index] != currentClusterIndex:
+                    # Get the point array of the current cluster to compare to the medoid
+                    currentClusterPoint = sample[currentClusterIndex]
+                    print("Current cluster point from sample:", currentClusterPoint)
+                    
+                    # Calculate the Manhattan distance between the medoid and the current point to compare with
+                    distance = metric(medoidPoint, currentClusterPoint)
+
+                    # Append the result to a list as the index of the medoid, the index of the current point and the distance between them
+                    distanceList.append([medoids[index], currentClusterIndex, distance])
+                    print("Distance between ", medoidPoint, " and ", currentClusterPoint, " is: ", distance)
+
+        print(distanceList)
 
     """# K-medoids clustering using distance matrix
 
