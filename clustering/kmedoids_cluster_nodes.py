@@ -79,7 +79,7 @@ def cluster_nodes():
         metric = distance_metric(type_metric.MANHATTAN);
         
         # Initiate the k-medoids algorithm with the sample and the initial medoids
-        kmedoids_instance = kmedoids(sample, initial_medoids[index], 0.001, metric=metric);
+        kmedoids_instance = kmedoids(sample, initial_medoids[index], 0.001, metric=metric, ccore = True);
 
         # Run clustering and print results
         kmedoids_instance.process();

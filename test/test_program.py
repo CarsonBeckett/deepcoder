@@ -44,5 +44,16 @@ class TestProgram(unittest.TestCase):
         program = Program.parse(prefix)
         self.assertRaises(OutputOutOfRangeError, program, *inputs)
 
+    def test_maxrank(self):
+        # takes the second highest negative number
+        prefix = 'LIST|MAXIMUM,0'
+        program = Program.parse(prefix)
+
+        expected = IntValue(3)
+        actual = program(ListValue([1, -5, -3, -4, -2, -1, 2, 3]))
+
+        self.assertEqual(actual, expected)
+        self.assertEqual(program.toprefix(), prefix)
+
 if __name__ == '__main__':
     unittest.main()

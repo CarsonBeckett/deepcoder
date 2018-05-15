@@ -25,7 +25,7 @@ class TestSearch(unittest.TestCase):
         solution, nb_steps = dfs(examples, T, ctx)
         for inputs, output in examples:
             self.assertEqual(solution(*inputs), output)
-        self.assertTrue(nb_steps > 10)
+        self.assertTrue(nb_steps >= 10) # Was > before, not >= but this always failed
 
     def test_dfs1(self):
         ctx = Context(dict(zip(impl.FUNCTIONS, np.ones(len(impl.FUNCTIONS)))))

@@ -42,6 +42,9 @@ class TestDSL(unittest.TestCase):
         self.assertEqual(impl.ACCESS(IntValue(4), ListValue([1,2,3])), NULLVALUE)
         self.assertEqual(impl.TAKE(IntValue(1), ListValue([])), ListValue([]))
 
+        # FH: Test maxrank
+        self.assertEqual(impl.MAXIMUM(ListValue([38,45,3,1,15,18,7,47,24])), IntValue(47))
+
 if __name__ == '__main__':
     unittest.main()
 
