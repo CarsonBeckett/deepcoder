@@ -44,10 +44,15 @@ for scenario in scenarios:
 print("CLUSTERLIST: ", clusterList[0])
 #print(scenarios)
 leaders = []
-
-print("Rank: ", rank(clusterList[0]))
+rankSets = rank(clusterList[0])
+print("Rank sets: ", rankSets)
+ranks = []
+for i in range(len(rankSets)):
+    ranks.append(rankSets[i][1])
+print("Rank: ", ranks)
+# Replace with call to DeepCoder
 leader = monarchical_leader_election(ranks)
-print("Index:", leader, ", Node ID:", ranking[leader][0])
+print("Index:", leader, ", Node ID:", rankSets[leader][0])
 
 
 """for cluster in clusterList:

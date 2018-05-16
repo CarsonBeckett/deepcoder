@@ -22,9 +22,10 @@
 @endcond
 """
 
+import numpy;
 from pyclustering.samples.definitions import SIMPLE_SAMPLES, FCPS_SAMPLES;
 
-from pyclustering.utils import calculate_distance_matrix;
+from pyclustering.utils import calculate_distance_matrix, average_inter_cluster_distance, average_intra_cluster_distance;
 from pyclustering.utils.metric import distance_metric, type_metric;
 
 from pyclustering.cluster import cluster_visualizer;
@@ -54,6 +55,25 @@ import os;
     
     return (sample, clusters);"""
 
+def silhouette_value(clusters, sample):
+    silhouette = []
+    print("DEBUG:", clusters[0])
+    for index in range(len(clusters)):
+        if(index < len(clusters)-1):
+            print("DEBUG2:", index)
+            inter_clust_dist = average_inter_cluster_distance(clusters[index], clusters[index+1], data = sample)
+            intra_clust_dist = average_intra_cluster_distance(clusters[index], clusters[index+1], data = sample)
+
+            print("inter:", inter_clust_dist)
+            print("intra:", intra_clust_dist)
+
+            # Calculate the silhouette value
+            print("maximum:", numpy.maximum(intra_clust_dist, inter_clust_dist))
+            silhouette.append(((inter_clust_dist - intra_clust_dist) / numpy.maximum(intra_clust_dist, inter_clust_dist)))
+            print("silhouette:", silhouette)
+
+    return numpy.mean(silhouette)
+
 def cluster_nodes():
     # (kmedoids_cluster_nodes.py
     # template_clustering()
@@ -65,7 +85,9 @@ def cluster_nodes():
     
     scenarios = ["scenario1.data", "scenario2.data", "scenario3.data"]
     #initial_medoids = [[8, 12, 17, 25], [8, 12, 17, 25], [8, 12, 22, 28]];
-    initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25]];
+    #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25]];
+    #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [15, 25, 28, 32, 10]]; 0.2476339234441543
+    initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [13, 23, 28, 32, 8]];
 
     scenarioClustersDistanceList = []
 
@@ -87,6 +109,10 @@ def cluster_nodes():
         medoids = kmedoids_instance.get_medoids();
         print("Clusters: ", clusters);
         print("Medoids: ", medoids)
+
+        # Calculate Silhouette value
+        sil_val = silhouette_value(clusters, sample)
+        print("Silhouette value: ", sil_val)
 
         # Generate visualisation
         title = "K-medoids clustering - Scenario " + str(index+1)
@@ -240,4 +266,4 @@ cluster_engy_time();"""
 
 # display_fcps_clustering_results();
 
-#cluster_nodes()
+cluster_nodes()
