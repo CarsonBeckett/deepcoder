@@ -9,12 +9,6 @@
 
 # -----
 
-import collections
-import concurrent.futures
-import copy
-import itertools
-import multiprocessing
-import queue
 import time
 
 import numpy as np
@@ -37,7 +31,7 @@ from kmedoids_cluster_nodes import cluster_nodes
 from deepcoder.scripts.solve_problems import solve_problem
 
 from deepcoder import context
-from deepcoder.search import dfs
+from deepcoder.search import dfs, sort_and_add
 from deepcoder.dsl import impl
 from deepcoder.dsl import types
 from deepcoder.dsl.value import Value
@@ -64,18 +58,19 @@ def rank(cluster):
 def monarchical_leader_election(ranking):
     return max(ranking)
 
-#Run the program
+# -----
+"""
+# Run the clustering algorithm
 scenarios = cluster_nodes()
+
+# Extract the clusters in each scenario from a list of all scenarios
 clusterList = []
 for scenario in scenarios:
-    #print(clusters)
-    #print(scenarios == clusters)
     for clusters in scenario:
         clusterList.append(clusters)
     
 print("CLUSTERLIST: ", clusterList[0])
 #print(scenarios)
-leaders = []
 rankSets = rank(clusterList[0])
 print("Rank sets: ", rankSets)
 ranks = []
@@ -93,7 +88,7 @@ print("Index:", leader, ", Node ID:", rankSets[leader][0])
 #deepcoder_result = solve_problem("dataset/T=2_test.json",2)
 
 #examples = [([ranks], leader), ([[0,1,2,3,4,5]], 5)]
-examples = [([[0,1,2,3,4,5,6,7,8]], 8), ([[0,1,2,3,4,5]], 5)]
+examples = [([[5,1,8,3,4,0,6,7,2]], 8), ([[1,0,2,5,4,3]], 5)]
 print("examples:", examples)
 predictions = numpy.zeros(len(impl.FUNCTIONS))
 print("predictions:", predictions)
@@ -113,6 +108,7 @@ print("examples 00:", examples[0][0])
 
 # [([[13, -147, -30, 15, -110, -85, 66, -240, -111, 132, 236, -149, -76, -163, -159, -34, -225, 197, 26]], [13, -147, -30, 15, -110, -85, 66, -240, -111, 132, 236, -149, -76, -163, -159, -34, -225, 197, 26]), ([[-118, -81, 120]], [-118, -81, 120]), ([[141, 87, -220, 167, 98, -180, 177, -30, 52, 203, -155, 172, 4, 92]], [141, 87, -220, 167, 98, -180, 177, -30, 52, 203, -155, 172, 4, 92]), ([[-101, -156, -120, -183, 166, -27, -14, -43, -94, -188, -170, -237]], [-101, -156, -120, -183, 166, -27, -14, -43, -94, -188, -170, -237]), ([[-203, 133, -78, 35, -253, 143, -249, -223, 203, -182, 35, -248, 186, 85, 169, -157]], [-203, 133, -78, 35, -253, 143, -249, -223, 203, -182, 35, -248, 186, 85, 169, -157])]
 
+# Format input correctly
 def decode(example):
     print("DECODE:", example)
     inputs = [Value.construct(x) for x in example[0]]
@@ -122,13 +118,10 @@ def decode(example):
 print("TEST1:", examples[0][0])
 print("TEST2:", examples[0][1])
 examples2 = [decode(x) for x in examples]
-#print("INPUTS:", inputs)
-#print("OUTPUT:", output)
-#examples2.append(inputs,output) inputs, output
-
-
 
 print("VALUE CONSTRUCTION EXAMPLES2", examples2)
+
+# Depth-first search (DFS)
 start = time.time()
 solution, steps_used = dfs(examples2, 2, ctx, np.inf)
 end = time.time()
@@ -136,25 +129,22 @@ end = time.time()
 if solution:
     solution = solution.prefix
 
-print("DeepCoder result:", solution)
+# Print DFS results
+print("DFS result:", solution)
 print("Execution time:", end - start)
 print("Steps used:", steps_used)
 
+# Sort and add enumerative search
+start = time.time()
+solution, steps_used = sort_and_add(examples2, 2, ctx, np.inf)
+end = time.time()
 
-"""for cluster in clusterList:
-    ranking = rank(cluster)
-    print(ranking)
-    ranks = []
-    for rank in ranking:
-        ranks.append(rank[1])
-        
-    leader = monarchical_leader_election(ranks)
-    print("Index:", leader, ", Node ID:", ranking[leader][0])
+if solution:
+    solution = solution.prefix
+
+# Print DFS results
+print("Sort and add result:", solution)
+print("Execution time:", end - start)
+print("Steps used:", steps_used)
 """
-"""ranking = rank([[15, 11, 0.6663620000000003], [15, 12, 0.7182299999999993], [15, 13, 0.058244999999999436], [15, 14, 0.4529019999999999]])
-print(ranking)
-ranks = []
-for rank in ranking:
-    ranks.append(rank[1])
-leader = monarchical_leader_election(ranks)
-print("Index:", leader, ", Node ID:", ranking[leader][0])"""
+# EOF

@@ -82,21 +82,21 @@ def cluster_nodes():
     
     scenarios = ["scenario1.data", "scenario2.data", "scenario3.data"]
     #initial_medoids = [[8, 12, 17, 25], [8, 12, 17, 25], [8, 12, 22, 28]];
-    #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25]];
+    initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25]];
     #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [15, 25, 28, 32, 10]]; 0.2476339234441543
-    initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [13, 23, 28, 32, 8]];
+    #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [13, 23, 28, 32, 8]];
 
     scenarioClustersDistanceList = []
 
-    for index in range(0, len(scenarios)):
-        samplePath = os.path.dirname(os.path.abspath("kmedoids_cluster_nodes.py")) + os.sep + scenarios[index]
+    for scenarioIndex in range(0, len(scenarios)):
+        samplePath = os.path.dirname(os.path.abspath("kmedoids_cluster_nodes.py")) + os.sep + scenarios[scenarioIndex]
         sample = read_sample(samplePath)
 
         # Use Manhattan distance
         metric = distance_metric(type_metric.MANHATTAN);
         
         # Initiate the k-medoids algorithm with the sample and the initial medoids
-        kmedoids_instance = kmedoids(sample, initial_medoids[index], 0.001, metric=metric, ccore = True);
+        kmedoids_instance = kmedoids(sample, initial_medoids[scenarioIndex], 0.001, metric=metric, ccore = True);
         # Scenario 3 - ccore on
         # 0.0010434424744274473
         # 0.0009705311214009971
@@ -120,7 +120,7 @@ def cluster_nodes():
         print("Silhouette value: ", sil_val)
 
         # Generate visualisation
-        title = "K-medoids clustering - Scenario " + str(index+1)
+        title = "K-medoids clustering - Scenario " + str(scenarioIndex+1)
         visualizer = cluster_visualizer(1, titles=[title]);
         visualizer.append_clusters(clusters, sample, 0);
         #visualizer.append_cluster([ sample[index] for index in initial_medoids[index] ], marker = '*', markersize = 15);
@@ -156,8 +156,10 @@ def cluster_nodes():
             clusterList.append(nodeList)
             
         scenarioClustersDistanceList.append(clusterList)
-        #print(distanceList)
+        #print("Scenario", scenarioIndex, "distance list:", clusterList)
 
+    print("All scenarios distance list:", scenarioClustersDistanceList)
+    print("Length:", len(scenarioClustersDistanceList))
     return scenarioClustersDistanceList
     
     """# K-medoids clustering using distance matrix
@@ -270,5 +272,3 @@ cluster_engy_time();"""
 
 
 # display_fcps_clustering_results();
-
-cluster_nodes()
