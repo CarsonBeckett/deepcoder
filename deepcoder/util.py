@@ -32,7 +32,7 @@ def decode_example(example):
     output = Value.construct(example['output'])
     #print("Output after value construction:", output)
     complete = inputs, output
-    #print("CONSTRUCTION COMPLETED", complete)
+    print("CONSTRUCTION COMPLETED", complete)
     return inputs, output
 
 def pretty_print_problem(problem, fh=sys.stdout, trailing_comma=False):

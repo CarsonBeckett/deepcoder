@@ -22,19 +22,16 @@
 @endcond
 """
 
-import numpy;
 from pyclustering.samples.definitions import SIMPLE_SAMPLES, FCPS_SAMPLES;
 
-from pyclustering.utils import calculate_distance_matrix, average_inter_cluster_distance, average_intra_cluster_distance;
+from pyclustering.utils import calculate_distance_matrix, average_inter_cluster_distance, average_intra_cluster_distance, read_sample, timedcall;
 from pyclustering.utils.metric import distance_metric, type_metric;
 
 from pyclustering.cluster import cluster_visualizer;
 from pyclustering.cluster.kmedoids import kmedoids;
 
-from pyclustering.utils import read_sample;
-from pyclustering.utils import timedcall;
-
 import os;
+import numpy;
 
 """def template_clustering(start_medoids, path, tolerance = 0.25, show = True):
     sample = read_sample(path);
@@ -94,17 +91,25 @@ def cluster_nodes():
     for index in range(0, len(scenarios)):
         samplePath = os.path.dirname(os.path.abspath("kmedoids_cluster_nodes.py")) + os.sep + scenarios[index]
         sample = read_sample(samplePath)
-        print(samplePath)
-        print(sample)
 
         # Use Manhattan distance
         metric = distance_metric(type_metric.MANHATTAN);
         
         # Initiate the k-medoids algorithm with the sample and the initial medoids
         kmedoids_instance = kmedoids(sample, initial_medoids[index], 0.001, metric=metric, ccore = True);
+        # Scenario 3 - ccore on
+        # 0.0010434424744274473
+        # 0.0009705311214009971
+        # 0.0010358812970769904
+        
+        # Scenario 3 - ccore off
+        # 0.0016321341396068334
+        # 0.001634564518041115
+        # 0.0017080159551645657
 
-        # Run clustering and print results
-        kmedoids_instance.process();
+        # Run clustering and print result of clustering as well as execution time
+        (ticks, result) = timedcall(kmedoids_instance.process);
+        print("Sample: ", samplePath, "\t\tExecution time: ", ticks, "\n");
         clusters = kmedoids_instance.get_clusters();
         medoids = kmedoids_instance.get_medoids();
         print("Clusters: ", clusters);
