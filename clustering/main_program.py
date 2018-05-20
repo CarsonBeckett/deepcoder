@@ -11,31 +11,73 @@ from leader_election import rank, monarchical_leader_election
 from kmedoids_cluster_nodes import cluster_nodes, silhouette_value
 import numpy
 import time
+import unittest
 from deepcoder import context
 from deepcoder.search import dfs, sort_and_add
 from deepcoder.dsl import impl
 from deepcoder.dsl import types
-from deepcoder.dsl.value import Value
+from deepcoder.dsl.function import OutputOutOfRangeError
+from deepcoder.dsl.program import Program, prune, get_unused_indices
+from deepcoder.dsl.value import Value, IntValue, ListValue
+
+def decode_example(example):
+        #print("DECODE:", example)
+        inputs = [Value.construct(x) for x in example[0]]
+        output = Value.construct(example[1])
+        return inputs, output
+
+# Test section
+def test_leader_election(solution, examples):
+        prefix = str(solution)
+        program = Program.parse(prefix)
+
+        consistent = True
+        for tuples in examples:
+            #print("tuples:", tuples)
+            inputs, output = tuples
+            #print("Inputs:", inputs)
+            #print("Output:", output)
+            #print("stripped:", inputs[0])
+            #print("TYPE:", type(inputs[0]))
+            #raw_input = []
+            #for i in range(len(inputs[0])):
+            #    raw_input.append(inputs[0][i])
+            #raw_input = inputs[0]
+            #raw_input2 = raw_input.val
+            #print("Raw input:", raw_input2)
+            
+            expected = IntValue(monarchical_leader_election(inputs[0].val))
+            actual = program(inputs[0])
+            #assertEqual(dfs_actual, dfs_expected)
+            #print("DFS expected:", dfs_expected)
+            #print("DFS actual:", dfs_actual)
+            if (actual != expected):
+                consistent = False
+                print("DeepCoder program inconsistent with ground truth program")
+                break
+            #assertEqual(dfs_program.toprefix(), prefix)
+
+        return consistent
 
 def main():
     # Run the clustering algorithm
-    scenarios = cluster_nodes()
+    scenarios = cluster_nodes(visualisation=True)
     #print("MAIN SCENARIOS:", scenarios)
-    print("TEST1", scenarios[0][0])
+    #print("TEST1", scenarios[0][0])
     # Extract the clusters in each scenario from a list of all scenarios
     scenarioRanks = []
     ranks = []
     clusterList = []
     for scenario in scenarios:
         for clusters in scenario:
-            print("CLUSTERSMAIN", clusters)
+            #print("CLUSTERSMAIN", clusters)
             scenarioRanks.append(rank(clusters))
 
         ranks.append(scenarioRanks)
 
-    print("Ranks:", ranks)
-    print("Length:", len(ranks))
-    print("Ranks for one scenario:", ranks[0])
+    #print("Ranks:", ranks)
+    #print("Length:", len(ranks))
+    #print("Ranks for one scenario:", ranks[0])
 
     # Package the ranks of one cluster together with its leader to prepare for DeepCoder processing
     
@@ -44,6 +86,7 @@ def main():
         for clusterRanks in scenario:
             # Strip away node ID / index in sample from a copy of the list
             strippedRanks = []
+            #print("TEST999:", clusterRanks)
             for i in range(len(clusterRanks)):
                 strippedRanks.append(clusterRanks[i][1])
             
@@ -54,58 +97,56 @@ def main():
             # E.g. the format obtained from the function 'rank' is sorted meaning DeepCoder can incorrectly believe
             # that getting the last element (tail) of the list is also correct.
             numpy.random.shuffle(strippedRanks)
-            print("Shuffled ranks:", strippedRanks)
+            #print("Shuffled ranks:", strippedRanks)
             
             #Build the input-output tuple
-            examples.append((strippedRanks, leader))
-            print("TEST2", strippedRanks)
-            print("IndexLeader:", len(strippedRanks)-1)
-            print("Leader:", leader)
+            examples.append(([strippedRanks], leader))
+            #print("TEST2", strippedRanks)
+            #print("IndexLeader:", len(strippedRanks)-1)
+            #print("Leader:", leader)
 
-    print("Full examples:", examples)
-    print("TEST3:", examples[0])
+    #print("Full examples:", examples)
+    #print("TEST3:", examples[0])
     
     # Preprocessing
+    decoded_examples = [decode_example(x) for x in examples]
     predictions = numpy.zeros(len(impl.FUNCTIONS))
     scores = dict(zip(impl.FUNCTIONS, predictions))
     ctx = context.Context(scores)
-
-    def decode(example):
-        print("DECODE:", example)
-        inputs = [Value.construct(x) for x in example[0]]
-        output = Value.construct(example[1])
-        return inputs, output
-
-    examples2 = [decode(x) for x in examples]
-    print("VALUE CONSTRUCTION EXAMPLES2", examples2)
+    
+    #print("VALUE CONSTRUCTION EXAMPLES", decoded_examples)
 
     # Pass formatted rank and elected leader as input-output examples to DeepCoder
 
     # Depth-first search (DFS)
-    start = time.time()
-    solution, steps_used = dfs(examples2, 2, ctx, numpy.inf)
-    end = time.time()
+    dfs_start = time.time()
+    dfs_solution, dfs_steps_used = dfs(decoded_examples, 2, ctx, numpy.inf)
+    dfs_end = time.time()
 
-    if solution:
-        solution = solution.prefix
+    if dfs_solution:
+        dfs_solution = dfs_solution.prefix
 
     # Print DFS results
-    print("DFS result:", solution)
-    print("Execution time:", end - start)
-    print("Steps used:", steps_used)
+    print("\nDFS result:", dfs_solution)
+    print("Execution time:", dfs_end - dfs_start)
+    print("Steps used:", dfs_steps_used)
 
     # Sort and add enumerative search
-    start = time.time()
-    solution, steps_used = sort_and_add(examples2, 2, ctx, numpy.inf)
-    end = time.time()
+    saa_start = time.time()
+    saa_solution, saa_steps_used = sort_and_add(decoded_examples, 2, ctx, numpy.inf)
+    saa_end = time.time()
 
-    if solution:
-        solution = solution.prefix
+    if saa_solution:
+        saa_solution = saa_solution.prefix
 
-    # Print DFS results
-    print("Sort and add result:", solution)
-    print("Execution time:", end - start)
-    print("Steps used:", steps_used)
+    # Print Sort and add results
+    print("\nSort and add result:", saa_solution)
+    print("Execution time:", saa_end - saa_start)
+    print("Steps used:", saa_steps_used)
+
+    # Compare the elected leader from running the program inferred by DeepCoder to the ground truth from the oracle
+    print("\nSynthesised program using DFS consistent with ground truth:", test_leader_election(dfs_solution, decoded_examples))
+    print("Synthesised program using sort and add consistent with ground truth:", test_leader_election(saa_solution, decoded_examples))
     
 main()
 

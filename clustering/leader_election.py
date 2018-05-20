@@ -39,12 +39,12 @@ from deepcoder.dsl.value import Value
 # Assign a rank to every node in a cluster depending on its distance to the representative object of the cluster (in this case its medoid)
 def rank(cluster):
     ranks = []
-    print("Original: ", cluster)
+    #print("Original: ", cluster)
 
     # Sort the cluster list in descending order on the distance to the representative object of the cluster
     # The lower the distance the higher the index/rank
     sortedCluster = sorted(cluster, key=itemgetter(2), reverse=True)
-    print("Sorted: ", sortedCluster)
+    #print("Sorted: ", sortedCluster)
 
     # Build output list by appending the index/ID of the node and its priority
     for index in range(len(sortedCluster)):
@@ -142,7 +142,7 @@ end = time.time()
 if solution:
     solution = solution.prefix
 
-# Print DFS results
+# Print Sort and add results
 print("Sort and add result:", solution)
 print("Execution time:", end - start)
 print("Steps used:", steps_used)
