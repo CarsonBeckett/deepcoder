@@ -32,6 +32,7 @@ from pyclustering.cluster.kmedoids import kmedoids;
 
 import os;
 import numpy;
+import random;
 
 """def template_clustering(start_medoids, path, tolerance = 0.25, show = True):
     sample = read_sample(path);
@@ -80,9 +81,25 @@ def cluster_nodes(visualisation=False):
     # Get the nodes sample from the data file
     # samplePath = os.path.dirname(os.path.abspath("kmedoids_cluster_nodes.py")) + os.sep + "nodes-test1.data"
     
-    scenarios = ["scenario1.data", "scenario2.data", "scenario3.data"]
+    scenarios = ["scenario1.data", "scenario2.data", "scenario3.data", "scenario4.data", "scenario4.data", "scenario5.data"]
+
+    """
+    #random.seed(35344796)
+    random.seed(35334096)
+    scenario4 = []
+    for i in range(10):
+        scenario4.append(random.randrange(1000))
+    
+    print(scenario4)
+    """
+    
+    # [564, 162, 959, 271, 663, 992, 566, 883, 438, 118] # 1k
     #initial_medoids = [[8, 12, 17, 25], [8, 12, 17, 25], [8, 12, 22, 28]];
-    initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25]];
+    #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25], [103, 16, 196, 76, 80, 41, 47, 52, 112, 199], [10461, 7157, 11717, 2709, 13116, 16811, 2041, 19481, 9130, 12817]];
+    #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25], [103, 16, 196, 76, 80, 41, 47, 52, 112, 199], [8257, 3356, 10812, 2440, 14783, 10547, 11063, 11980, 6929, 18896]]
+    #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25], [103, 16, 196, 76, 80, 41, 47, 52, 112, 199], [1129, 324, 1919, 542, 1326, 1985, 1133, 1767, 877, 237], [103, 16, 196, 76, 80]]
+    initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25], [103, 16, 196, 76, 80, 41, 47, 52, 112, 199], [103, 16, 196, 76, 80], [564, 162, 959, 271, 663, 992, 566, 883, 438, 118]]
+    #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25], [103, 16, 196, 76, 80, 41, 47, 52, 112, 199]];
     #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [15, 25, 28, 32, 10]]; 0.2476339234441543
     #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [13, 23, 28, 32, 8]];
 
@@ -109,11 +126,11 @@ def cluster_nodes(visualisation=False):
 
         # Run clustering and print result of clustering as well as execution time
         (ticks, result) = timedcall(kmedoids_instance.process);
-        print("\nScenario", scenarioIndex, "\nSample:", samplePath, "\nExecution time:", ticks);
+        print("\nScenario", scenarioIndex+1, "\nSample:", samplePath, "\nExecution time:", ticks);
         clusters = kmedoids_instance.get_clusters();
         medoids = kmedoids_instance.get_medoids();
-        print("Clusters:", clusters);
-        print("Medoids:", medoids)
+        #print("Clusters:", clusters);
+        #print("Medoids:", medoids)
 
         # Calculate Silhouette value
         sil_val = silhouette_value(clusters, sample)

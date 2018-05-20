@@ -123,31 +123,35 @@ def main():
     dfs_solution, dfs_steps_used = dfs(decoded_examples, 2, ctx, numpy.inf)
     dfs_end = time.time()
 
+    # Sort and add enumerative search
+    saa_start = time.time()
+    saa_solution, saa_steps_used = sort_and_add(decoded_examples, 2, ctx, numpy.inf)
+    saa_end = time.time()
+
+    # Compare the elected leader from running the program inferred by DeepCoder to the ground truth from the oracle
     if dfs_solution:
         dfs_solution = dfs_solution.prefix
+        print("\nSynthesised program using DFS consistent with ground truth:", test_leader_election(dfs_solution, decoded_examples))
+    else:
+        print("\nNo solution found with DFS")
+        
+    if saa_solution:
+        saa_solution = saa_solution.prefix
+        print("Synthesised program using sort and add consistent with ground truth:", test_leader_election(saa_solution, decoded_examples))
+
+    else:
+        print("No solution found with sort and add")
 
     # Print DFS results
     print("\nDFS result:", dfs_solution)
     print("Execution time:", dfs_end - dfs_start)
     print("Steps used:", dfs_steps_used)
 
-    # Sort and add enumerative search
-    saa_start = time.time()
-    saa_solution, saa_steps_used = sort_and_add(decoded_examples, 2, ctx, numpy.inf)
-    saa_end = time.time()
-
-    if saa_solution:
-        saa_solution = saa_solution.prefix
-
     # Print Sort and add results
     print("\nSort and add result:", saa_solution)
     print("Execution time:", saa_end - saa_start)
     print("Steps used:", saa_steps_used)
-
-    # Compare the elected leader from running the program inferred by DeepCoder to the ground truth from the oracle
-    print("\nSynthesised program using DFS consistent with ground truth:", test_leader_election(dfs_solution, decoded_examples))
-    print("Synthesised program using sort and add consistent with ground truth:", test_leader_election(saa_solution, decoded_examples))
-    
+        
 main()
 
 # EOF
