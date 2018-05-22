@@ -84,7 +84,7 @@ def calculate_silhouette(sample, cluster_labels, medoids, k, visualisation=False
         # The 1st subplot is the silhouette plot
         # The silhouette coefficient can range from -1, 1 but in this example all
         # lie within [-0.1, 1]
-        ax1.set_xlim([-1, 1])
+        ax1.set_xlim([-0.5, 1])
         # The (n_clusters+1)*10 is for inserting blank space between silhouette
         # plots of individual clusters, to demarcate them clearly.
         ax1.set_ylim([0, len(sample) + (k + 1) * 10])
@@ -130,7 +130,7 @@ def calculate_silhouette(sample, cluster_labels, medoids, k, visualisation=False
         ax1.axvline(x=silhouette_avg, color="red", linestyle="--")
 
         ax1.set_yticks([])  # Clear the yaxis labels / ticks
-        ax1.set_xticks([-1, -0.8, -0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6, 0.8, 1])
+        ax1.set_xticks([-0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
 
         # 2nd Plot showing the actual clusters formed
         #colors = cm.spectral(cluster_labels.astype(float) / n_clusters) #OLD
@@ -153,7 +153,7 @@ def calculate_silhouette(sample, cluster_labels, medoids, k, visualisation=False
         ax2.set_xlabel("Feature space for the 1st feature")
         ax2.set_ylabel("Feature space for the 2nd feature")
 
-        plt.suptitle(("Silhouette analysis for KMeans clustering on sample data "
+        plt.suptitle(("Silhouette analysis for K-medoids clustering on sample data "
                       "with k = %d" % k),
                      fontsize=14, fontweight='bold')
 
