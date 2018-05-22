@@ -15,11 +15,14 @@ def generate_dataset():
 
         # Set the seed for reproducibility 
         random.seed(92385736)
-        
+        #random.seed(6139866599598374)
+        # Bad: 3.77686 4.342717
+        # Good: 1.602743 3.620128
+        # Position: 960
         # Open the file, create one if it doesn't exist already
         file= open("scenario5.data","w+")
         
-        for i in range(1000):
+        for i in range(900):
                 # Randomly generated points
                 x = round(random.uniform(0.5, 7.5), 6)
                 y = round(random.uniform(0.5, 7.5), 6)

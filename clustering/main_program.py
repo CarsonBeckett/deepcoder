@@ -8,7 +8,7 @@
 """
 
 from leader_election import rank, monarchical_leader_election
-from kmedoids_cluster_nodes import cluster_nodes, silhouette_value
+from kmedoids_cluster_nodes import cluster_nodes
 import numpy
 import time
 import unittest
@@ -58,7 +58,19 @@ def test_leader_election(solution, examples):
             #assertEqual(dfs_program.toprefix(), prefix)
 
         return consistent
-
+"""
+def predict(predictor_file):
+        if predictor_file:
+                print("Predictor file path:", predictor_file)
+                # annotate problems with predictions
+                import keras
+                predictor = keras.models.load_model(predictor_file)
+                max_nb_inputs = model.get_max_nb_inputs(predictor)
+                X, _ = model.get_XY(problems, max_nb_inputs)
+                predictions = predictor.predict(X)
+                for problem, pred in zip(problems, predictions):
+                    problem['prediction'] = pred
+"""
 def main():
     # Run the clustering algorithm
     scenarios = cluster_nodes(visualisation=True)
@@ -120,12 +132,12 @@ def main():
 
     # Depth-first search (DFS)
     dfs_start = time.time()
-    dfs_solution, dfs_steps_used = dfs(decoded_examples, 2, ctx, numpy.inf)
+    dfs_solution, dfs_steps_used = dfs(decoded_examples, 1, ctx, numpy.inf)
     dfs_end = time.time()
 
     # Sort and add enumerative search
     saa_start = time.time()
-    saa_solution, saa_steps_used = sort_and_add(decoded_examples, 2, ctx, numpy.inf)
+    saa_solution, saa_steps_used = sort_and_add(decoded_examples, 1, ctx, numpy.inf)
     saa_end = time.time()
 
     # Compare the elected leader from running the program inferred by DeepCoder to the ground truth from the oracle
@@ -141,7 +153,7 @@ def main():
 
     else:
         print("No solution found with sort and add")
-
+        
     # Print DFS results
     print("\nDFS result:", dfs_solution)
     print("Execution time:", dfs_end - dfs_start)

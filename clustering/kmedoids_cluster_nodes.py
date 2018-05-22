@@ -30,32 +30,16 @@ from pyclustering.utils.metric import distance_metric, type_metric;
 from pyclustering.cluster import cluster_visualizer;
 from pyclustering.cluster.kmedoids import kmedoids;
 from pyclustering.cluster.encoder import cluster_encoder, type_encoding
+from pyclustering.cluster.center_initializer import kmeans_plusplus_initializer
 
-from silhouette_value import visualise_silhouette
+from silhouette_value import calculate_silhouette
+from operator import itemgetter
 
 import os;
 import numpy;
 import random;
 
-"""def template_clustering(start_medoids, path, tolerance = 0.25, show = True):
-    sample = read_sample(path);
-    
-    kmedoids_instance = kmedoids(sample, start_medoids, tolerance);
-    (ticks, result) = timedcall(kmedoids_instance.process);
-    
-    clusters = kmedoids_instance.get_clusters();
-    medoids = kmedoids_instance.get_medoids();
-    print("Sample: ", path, "\t\tExecution time: ", ticks, "\n");
-
-    if show is True:
-        visualizer = cluster_visualizer(1);
-        visualizer.append_clusters(clusters, sample, 0);
-        visualizer.append_cluster([ sample[index] for index in start_medoids ], marker = '*', markersize = 15);
-        visualizer.append_cluster(medoids, data=sample, marker='*', markersize=15);
-        visualizer.show();
-    
-    return (sample, clusters);"""
-
+"""
 def silhouette_value(clusters, sample):
     silhouette = []
     #print("DEBUG:", clusters[0])
@@ -74,6 +58,7 @@ def silhouette_value(clusters, sample):
             #print("silhouette:", silhouette)
 
     return numpy.mean(silhouette)
+"""
 
 def cluster_nodes(visualisation=False):
     # (kmedoids_cluster_nodes.py
@@ -84,8 +69,8 @@ def cluster_nodes(visualisation=False):
     # Get the nodes sample from the data file
     # samplePath = os.path.dirname(os.path.abspath("kmedoids_cluster_nodes.py")) + os.sep + "nodes-test1.data"
     
-    scenarios = ["scenario1.data", "scenario2.data", "scenario3.data", "scenario4.data", "scenario4.data", "scenario5.data"]
-
+    #scenarios = ["scenario1.data", "scenario2.data", "scenario3.data", "scenario4.data", "scenario5.data"]
+    scenarios = ["scenario1.data", "scenario2.data", "scenario3.data", "scenario4.data", "scenario5.data"]
     """
     #random.seed(35344796)
     random.seed(35334096)
@@ -101,7 +86,7 @@ def cluster_nodes(visualisation=False):
     #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25], [103, 16, 196, 76, 80, 41, 47, 52, 112, 199], [10461, 7157, 11717, 2709, 13116, 16811, 2041, 19481, 9130, 12817]];
     #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25], [103, 16, 196, 76, 80, 41, 47, 52, 112, 199], [8257, 3356, 10812, 2440, 14783, 10547, 11063, 11980, 6929, 18896]]
     #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25], [103, 16, 196, 76, 80, 41, 47, 52, 112, 199], [1129, 324, 1919, 542, 1326, 1985, 1133, 1767, 877, 237], [103, 16, 196, 76, 80]]
-    initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25], [103, 16, 196, 76, 80, 41, 47, 52, 112, 199], [103, 16, 196, 76, 80], [564, 162, 959, 271, 663, 992, 566, 883, 438, 118]]
+    #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25], [103, 16, 196, 76, 80, 41, 47, 52, 112, 199], [564, 162, 959, 271, 663, 992, 566, 883, 438, 118]]
     #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [9, 12, 25], [103, 16, 196, 76, 80, 41, 47, 52, 112, 199]];
     #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [15, 25, 28, 32, 10]]; 0.2476339234441543
     #initial_medoids = [[8, 12, 17, 25], [8, 12, 17], [13, 23, 28, 32, 8]];
@@ -112,29 +97,50 @@ def cluster_nodes(visualisation=False):
         samplePath = os.path.dirname(os.path.abspath("kmedoids_cluster_nodes.py")) + os.sep + scenarios[scenarioIndex]
         sample = read_sample(samplePath)
 
+        print("\nScenario", scenarioIndex+1, "\nSample:", samplePath)
+
         # Use Manhattan distance
         metric = distance_metric(type_metric.MANHATTAN);
 
+        # Store the silhouette value for different number of clusters (k)
+        silhouettes = []
+        
         # Run clustering k times, calculate silhouette value for each time and choose clustering with best value
         for k in range(2, 11):
             # Randomly generate the medoids
-            random.seed(35334096)
+            """random.seed(35334096)
             random_medoids = []
             for i in range(k):
                 random_medoids.append(random.randrange(len(sample)))
+"""
+            # Initialise the clustering algorithm with the k-means++ algorithm
+            initial_points = kmeans_plusplus_initializer(sample, k).initialize()
+            #print(sample)
+            #print("Type of initial points:", type(initial_points))
+            #print("Initial points:", initial_points)
+            initial_medoids = []
+            for point in sample:
+                #print("Sample point:", point)
+                for initial_point in initial_points:
+                    #print("Single point type:", type(initial_point))
+                    if(point[0] == initial_point[0] and point[1] == initial_point[1]):
+                        initial_medoids.append(sample.index(point))
+            #print("Initial medoids:", initial_medoids)
+            
 
-            print("Random medoids:", random_medoids)
+            #print("Random medoids:", random_medoids)
             
             # Initiate the k-medoids algorithm with the sample and the initial medoids
             #kmedoids_instance = kmedoids(sample, initial_medoids[scenarioIndex], 0.001, metric=metric, ccore = True);
-            kmedoids_instance = kmedoids(sample, random_medoids, 0.001, metric=metric, ccore = True);
-            (ticks, result) = timedcall(kmedoids_instance.process);
+            kmedoids_instance = kmedoids(sample, initial_medoids, 0.001, metric=metric, ccore = True);
+            (time, result) = timedcall(kmedoids_instance.process);
             
             # by default k-medoids returns representation CLUSTER_INDEX_LIST_SEPARATION
             clusters = kmedoids_instance.get_clusters()
-            print("Clusters before changing encoding:", clusters)
+            medoids = kmedoids_instance.get_medoids();
+            #print("Clusters before changing encoding:", clusters)
             type_repr = kmedoids_instance.get_cluster_encoding();
-            print("Representator type:", type_repr)
+            #print("Representator type:", type_repr)
             
             encoder = cluster_encoder(type_repr, clusters, sample);
         
@@ -147,34 +153,30 @@ def cluster_nodes(visualisation=False):
             cluster_labels = encoder.get_clusters()
             
             #print("Representator type afterwards:", type_repr2)
-            print("Cluster labels", cluster_labels)
+            #print("Cluster labels", cluster_labels)
 
-            medoids = kmedoids_instance.get_medoids();
-            print("Number of medoids:", len(medoids))
+            #print("Number of medoids:", len(medoids))
             #[[float(y) for y in x] for x in l]
             medoidPoints = [[point for point in sample[index]] for index in medoids]
-            print("Medoid points:", medoidPoints)
-            visualise_silhouette(sample, cluster_labels, medoidPoints, k)
+            #print("Medoid points:", medoidPoints)
+
+            # Calculate the silhouette value
+            silhouettes.append((calculate_silhouette(sample, cluster_labels, medoidPoints, k, visualisation), k, time, clusters, medoids))
             
             # Calculate Silhouette value
-            sil_val = silhouette_value(kmedoids_instance.get_clusters(), sample)
-            print("pyclustering silhouette value for", k, "clusters:", sil_val)
+            #sil_val = silhouette_value(kmedoids_instance.get_clusters(), sample)
+            #print("pyclustering silhouette value for", k, "clusters:", sil_val)
         
-        # Scenario 3 - ccore on
-        # 0.0010434424744274473
-        # 0.0009705311214009971
-        # 0.0010358812970769904
-        
-        # Scenario 3 - ccore off
-        # 0.0016321341396068334
-        # 0.001634564518041115
-        # 0.0017080159551645657
+        best_silhouette, best_k, best_time, best_clusters, best_medoids = max(silhouettes,key=itemgetter(0))
+        print("The best silhouette of", best_silhouette, "was achieved with k=" + str(best_k) + "\nExecution time:", str(best_time))
+        #print("Best clusters:", best_clusters)
+        #print("Best medoids:", best_medoids)
 
         # Run clustering and print result of clustering as well as execution time
-        (ticks, result) = timedcall(kmedoids_instance.process);
-        print("\nScenario", scenarioIndex+1, "\nSample:", samplePath, "\nExecution time:", ticks);
-        clusters = kmedoids_instance.get_clusters();
-        medoids = kmedoids_instance.get_medoids();
+        #(ticks, result) = timedcall(kmedoids_instance.process);
+        #print( "\nExecution time:", time);
+        #clusters = kmedoids_instance.get_clusters();
+        #medoids = kmedoids_instance.get_medoids();
         #print("Clusters:", clusters);
         #print("Medoids:", medoids)
 
@@ -182,9 +184,9 @@ def cluster_nodes(visualisation=False):
         if(visualisation):
             title = "K-medoids clustering - Scenario " + str(scenarioIndex+1)
             visualizer = cluster_visualizer(1, titles=[title]);
-            visualizer.append_clusters(clusters, sample, 0);
+            visualizer.append_clusters(best_clusters, sample, 0);
             #visualizer.append_cluster([ sample[index] for index in initial_medoids[index] ], marker = '*', markersize = 15);
-            visualizer.append_cluster(medoids, data=sample, marker='*', markersize=15, color="black");
+            visualizer.append_cluster(best_medoids, data=sample, marker='*', markersize=15, color="black");
             visualizer.show(visible_axis = False, visible_grid = False);
 
         # Post-processing
@@ -192,16 +194,16 @@ def cluster_nodes(visualisation=False):
         # Calculate Manhattan distance from medoid to all points in the cluster
         metric = distance_metric(type_metric.MANHATTAN);
         clusterList = []
-        print("Number of clusters:", len(clusters),)
-        for index in range(0, len(clusters)):
+        print("Number of clusters:", len(best_clusters),)
+        for index in range(0, len(best_clusters)):
             #print("Index: ", index)
-            medoidPoint = sample[medoids[index]]
+            medoidPoint = sample[best_medoids[index]]
             #print("Medoid point array: ", medoidPoint)
             #print("Cluster index array: ", clusters[index])
             nodeList = []
-            for currentClusterIndex in clusters[index]:
+            for currentClusterIndex in best_clusters[index]:
                 # Make sure not to compare the medoid to itself
-                if medoids[index] != currentClusterIndex:
+                if best_medoids[index] != currentClusterIndex:
                     # Get the point array of the current cluster to compare to the medoid
                     currentClusterPoint = sample[currentClusterIndex]
                     #print("Current cluster point from sample:", currentClusterPoint)
@@ -210,7 +212,7 @@ def cluster_nodes(visualisation=False):
                     distance = metric(medoidPoint, currentClusterPoint)
 
                     # Append the result to a list as the index of the medoid, the index of the current point and the distance between them
-                    nodeList.append([medoids[index], currentClusterIndex, distance])
+                    nodeList.append([best_medoids[index], currentClusterIndex, distance])
                     #print("Distance between ", medoidPoint, " and ", currentClusterPoint, " is: ", distance)
                     
             clusterList.append(nodeList)
