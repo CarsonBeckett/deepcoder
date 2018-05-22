@@ -29,6 +29,9 @@ from pyclustering.utils.metric import distance_metric, type_metric;
 
 from pyclustering.cluster import cluster_visualizer;
 from pyclustering.cluster.kmedoids import kmedoids;
+from pyclustering.cluster.encoder import cluster_encoder, type_encoding
+
+from silhouette_value import visualise_silhouette
 
 import os;
 import numpy;
@@ -111,9 +114,52 @@ def cluster_nodes(visualisation=False):
 
         # Use Manhattan distance
         metric = distance_metric(type_metric.MANHATTAN);
+
+        # Run clustering k times, calculate silhouette value for each time and choose clustering with best value
+        for k in range(2, 11):
+            # Randomly generate the medoids
+            random.seed(35334096)
+            random_medoids = []
+            for i in range(k):
+                random_medoids.append(random.randrange(len(sample)))
+
+            print("Random medoids:", random_medoids)
+            
+            # Initiate the k-medoids algorithm with the sample and the initial medoids
+            #kmedoids_instance = kmedoids(sample, initial_medoids[scenarioIndex], 0.001, metric=metric, ccore = True);
+            kmedoids_instance = kmedoids(sample, random_medoids, 0.001, metric=metric, ccore = True);
+            (ticks, result) = timedcall(kmedoids_instance.process);
+            
+            # by default k-medoids returns representation CLUSTER_INDEX_LIST_SEPARATION
+            clusters = kmedoids_instance.get_clusters()
+            print("Clusters before changing encoding:", clusters)
+            type_repr = kmedoids_instance.get_cluster_encoding();
+            print("Representator type:", type_repr)
+            
+            encoder = cluster_encoder(type_repr, clusters, sample);
         
-        # Initiate the k-medoids algorithm with the sample and the initial medoids
-        kmedoids_instance = kmedoids(sample, initial_medoids[scenarioIndex], 0.001, metric=metric, ccore = True);
+            # change representation from index list to label list
+            encoder.set_encoding(type_encoding.CLUSTER_INDEX_LABELING);
+            #kmedoids_instance.process
+            type_repr2 = encoder.get_encoding;
+
+            # Cluster representation converted from a list of sample indexes to their respective labels
+            cluster_labels = encoder.get_clusters()
+            
+            #print("Representator type afterwards:", type_repr2)
+            print("Cluster labels", cluster_labels)
+
+            medoids = kmedoids_instance.get_medoids();
+            print("Number of medoids:", len(medoids))
+            #[[float(y) for y in x] for x in l]
+            medoidPoints = [[point for point in sample[index]] for index in medoids]
+            print("Medoid points:", medoidPoints)
+            visualise_silhouette(sample, cluster_labels, medoidPoints, k)
+            
+            # Calculate Silhouette value
+            sil_val = silhouette_value(kmedoids_instance.get_clusters(), sample)
+            print("pyclustering silhouette value for", k, "clusters:", sil_val)
+        
         # Scenario 3 - ccore on
         # 0.0010434424744274473
         # 0.0009705311214009971
@@ -131,10 +177,6 @@ def cluster_nodes(visualisation=False):
         medoids = kmedoids_instance.get_medoids();
         #print("Clusters:", clusters);
         #print("Medoids:", medoids)
-
-        # Calculate Silhouette value
-        sil_val = silhouette_value(clusters, sample)
-        print("Silhouette value:", sil_val)
 
         # Generate visualisation
         if(visualisation):
