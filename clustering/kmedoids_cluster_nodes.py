@@ -114,6 +114,8 @@ def cluster_nodes(visualisation=False):
                 random_medoids.append(random.randrange(len(sample)))
 """
             # Initialise the clustering algorithm with the k-means++ algorithm
+            # Initialise the random generator with a seed for reproducibility
+            random.seed(35334096)
             initial_points = kmeans_plusplus_initializer(sample, k).initialize()
             #print(sample)
             #print("Type of initial points:", type(initial_points))
@@ -168,7 +170,7 @@ def cluster_nodes(visualisation=False):
             #print("pyclustering silhouette value for", k, "clusters:", sil_val)
         
         best_silhouette, best_k, best_time, best_clusters, best_medoids = max(silhouettes,key=itemgetter(0))
-        print("The best silhouette of", best_silhouette, "was achieved with k=" + str(best_k) + "\nExecution time:", str(best_time))
+        print("The best silhouette of", best_silhouette, "was achieved with k=" + str(best_k) + "\nExecution time of best clustering:", str(best_time))
         #print("Best clusters:", best_clusters)
         #print("Best medoids:", best_medoids)
 

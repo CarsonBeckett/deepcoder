@@ -22,7 +22,7 @@ def generate_dataset():
         # Open the file, create one if it doesn't exist already
         file= open("scenario5.data","w+")
         
-        for i in range(900):
+        for i in range(1000):
                 # Randomly generated points
                 x = round(random.uniform(0.5, 7.5), 6)
                 y = round(random.uniform(0.5, 7.5), 6)
