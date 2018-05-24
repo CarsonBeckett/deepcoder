@@ -61,11 +61,11 @@ def dfs(examples, T, ctx, gas=np.inf):
 
     # init
     #print("examples type:", examples.type)
-    print("Type():", type(examples[0][0]))
-    print("ExamplesDFS:", examples)
+    #print("Type():", type(examples[0][0]))
+    #print("ExamplesDFS:", examples)
     input_types = [x.type for x in examples[0][0]] # [0][0]
-    print("Examples:", examples[0][0])
-    print("INPUT TYPES:", input_types) #NEWLINE
+    #print("Examples:", examples[0][0])
+    #print("INPUT TYPES:", input_types) #NEWLINE
     input_type_to_inputs = collections.defaultdict(list)
     for i, input_type in enumerate(input_types):
         input_type_to_inputs[input_type].append(i)

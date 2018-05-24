@@ -18,6 +18,7 @@ from deepcoder.dsl.program import Program
 def solve_problem(problem, T, mode='dfs', gas=np.inf):
     examples = [util.decode_example(x) for x in problem['examples']]
     predictions = problem.get('prediction', np.zeros(len(impl.FUNCTIONS)))
+    print("Predictions:", predictions)
     scores = dict(zip(impl.FUNCTIONS, predictions))
     ctx = context.Context(scores)
     start = time.time()
@@ -66,6 +67,7 @@ def main():
     problems = json.loads(open(args.problemfile).read())
 
     if args.predictor:
+        print("Predictor file path:", args.predictor)
         # annotate problems with predictions
         import keras
         predictor = keras.models.load_model(args.predictor)

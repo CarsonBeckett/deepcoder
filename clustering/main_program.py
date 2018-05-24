@@ -74,7 +74,7 @@ def predict(predictor_file):
 def main():
     for i in range(30):
         # Run the clustering algorithm
-        scenarios = cluster_nodes(visualisation=True)
+        scenarios = cluster_nodes(visualisation=False)
         #print("MAIN SCENARIOS:", scenarios)
         #print("TEST1", scenarios[0][0])
         # Extract the clusters in each scenario from a list of all scenarios

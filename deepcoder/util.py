@@ -23,16 +23,16 @@ def decode_example(example):
         "output": []
     }
     """
-    print("Input before value construction:", [x for x in example['inputs']])
+    #print("Input before value construction:", [x for x in example['inputs']])
     inputs = [Value.construct(x) for x in example['inputs']]
     #print("Type() before:", type(example['inputs'][0]))
     #print("Type() after:", type(inputs[0]))
    # print("Input after value construction:", inputs)
-    print("Output before value construction:", example['output'])
+    #print("Output before value construction:", example['output'])
     output = Value.construct(example['output'])
     #print("Output after value construction:", output)
     complete = inputs, output
-    print("CONSTRUCTION COMPLETED", complete)
+    #print("CONSTRUCTION COMPLETED", complete)
     return inputs, output
 
 def pretty_print_problem(problem, fh=sys.stdout, trailing_comma=False):
