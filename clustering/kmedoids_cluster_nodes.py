@@ -95,10 +95,12 @@ def cluster_nodes(visualisation=False):
     scenarioClustersDistanceList = []
 
     for scenarioIndex in range(0, len(scenarios)):
+        total_time_start = time.perf_counter()
+        total_wall_time_start = time.time()
         samplePath = os.path.dirname(os.path.abspath("kmedoids_cluster_nodes.py")) + os.sep + scenarios[scenarioIndex]
         sample = read_sample(samplePath)
 
-        print("\nScenario", scenarioIndex+1, "\nSample:", samplePath)
+        print("\nScenario", scenarioIndex+1, "\nSample:", samplePath, "\n")
 
         # Use Manhattan distance
         metric = distance_metric(type_metric.MANHATTAN);
@@ -136,16 +138,22 @@ def cluster_nodes(visualisation=False):
             # Initiate the k-medoids algorithm with the sample and the initial medoids
             #kmedoids_instance = kmedoids(sample, initial_medoids[scenarioIndex], 0.001, metric=metric, ccore = True);
             kmedoids_instance = kmedoids(sample, initial_medoids, 0.001, metric=metric, ccore = True);
-            #(time, result) = timedcall(kmedoids_instance.process);
+
+            # Start performance counter
             time_start = time.perf_counter()
             wall_time_start = time.time()
+
+            # Perform actual clustering
             kmedoids_instance.process()
+
+            # Stop performance counter
             time_end = time.perf_counter()
             wall_time_end = time.time()
-            total_time = time_end - time_start
-            total_wall_time = wall_time_end - wall_time_start
-            #print("Performance time for clustering:", total_time)
-            #print("Wall time for clustering:", wall_time_end - wall_time_start)
+
+            # Calculate execution time and wall time
+            clustering_time = time_end - time_start
+            clustering_wall_time = wall_time_end - wall_time_start
+            print("Execution time for clustering for k=" + str(k) + ":", clustering_time, "\nWall time for clustering for k=" + str(k) + ":", clustering_wall_time)
             
             # by default k-medoids returns representation CLUSTER_INDEX_LIST_SEPARATION
             clusters = kmedoids_instance.get_clusters()
@@ -173,14 +181,14 @@ def cluster_nodes(visualisation=False):
             #print("Medoid points:", medoidPoints)
 
             # Calculate the silhouette value
-            silhouettes.append((calculate_silhouette(sample, cluster_labels, medoidPoints, k, visualisation), k, total_time, total_wall_time, clusters, medoids))
+            silhouettes.append((calculate_silhouette(sample, cluster_labels, medoidPoints, k, visualisation), k, clustering_time, clustering_wall_time, clusters, medoids))
             
             # Calculate Silhouette value
             #sil_val = silhouette_value(kmedoids_instance.get_clusters(), sample)
             #print("pyclustering silhouette value for", k, "clusters:", sil_val)
         
         best_silhouette, best_k, best_time, best_wall_time, best_clusters, best_medoids = max(silhouettes,key=itemgetter(0))
-        print("The best silhouette of", best_silhouette, "was achieved with k=" + str(best_k) + "\nExecution time of best clustering: " + str(best_time) + "\nWall time of best clustering: " + str(best_wall_time))
+        print("The best silhouette value of", best_silhouette, "was achieved with k=" + str(best_k) + "\nExecution time of best clustering: " + str(best_time) + "\nWall time of best clustering: " + str(best_wall_time))
         #print("Best clusters:", best_clusters)
         #print("Best medoids:", best_medoids)
 
@@ -206,7 +214,7 @@ def cluster_nodes(visualisation=False):
         # Calculate Manhattan distance from medoid to all points in the cluster
         metric = distance_metric(type_metric.MANHATTAN);
         clusterList = []
-        print("Number of clusters:", len(best_clusters),)
+        #print("Number of clusters:", len(best_clusters),)
         for index in range(0, len(best_clusters)):
             #print("Index: ", index)
             medoidPoint = sample[best_medoids[index]]
@@ -230,10 +238,11 @@ def cluster_nodes(visualisation=False):
             clusterList.append(nodeList)
             
         scenarioClustersDistanceList.append(clusterList)
-        #print("Scenario", scenarioIndex, "distance list:", clusterList)
 
-    #print("All scenarios distance list:", scenarioClustersDistanceList)
-    #print("Length:", len(scenarioClustersDistanceList))
+        total_time_end = time.perf_counter()
+        total_wall_time_end = time.time()
+        print("\nTotal scenario execution time:", total_time_end - total_time_start, "\nTotal scenario wall time:", total_wall_time_end - total_wall_time_start, "\n\n----")
+    
     return scenarioClustersDistanceList
     
     """# K-medoids clustering using distance matrix

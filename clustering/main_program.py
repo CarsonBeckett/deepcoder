@@ -168,6 +168,7 @@ def main():
         print("\nSort and add result:", saa_solution)
         print("Execution time:", saa_end - saa_start, "\nWall time:", saa_wallclock_end - saa_wallclock_start)
         print("Steps used:", saa_steps_used)
+        print("\n-------------------------------------------------\n")
         
 main()
 

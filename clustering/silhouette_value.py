@@ -77,7 +77,7 @@ def calculate_silhouette(sample, cluster_labels, medoids, k, visualisation=False
     silhouette_avg = silhouette_score(sample, cluster_labels)
     end = time.perf_counter()
     wall_end = time.time()
-    print("For k =", k, "The average silhouette_score is :", silhouette_avg, "\nExecution time for silhouette:", end - start, "\nWall clock time for silhouette:", wall_end - wall_start)
+    print("For k=" + str(k) + " the average silhouette value is:", silhouette_avg, "\nSilhouette execution time:", end - start, "\nSilhouette wall clock time:", wall_end - wall_start, "\n")
 
     if(visualisation):
         #for n_clusters in range_n_clusters:
