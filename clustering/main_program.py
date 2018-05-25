@@ -72,7 +72,9 @@ def predict(predictor_file):
                     problem['prediction'] = pred
 """
 def main():
+    # Run all scenarios 30 times for a good average of execution times and to verify reproducibility
     for i in range(30):
+        print("Test run " + str(i+1))
         # Run the clustering algorithm
         scenarios = cluster_nodes(visualisation=False)
         #print("MAIN SCENARIOS:", scenarios)
