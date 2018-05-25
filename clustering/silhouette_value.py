@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 #from nipy import nipy_spectral
 import numpy as np
+import time
 
 #print(__doc__)
 
@@ -71,10 +72,12 @@ def calculate_silhouette(sample, cluster_labels, medoids, k, visualisation=False
     # clusters
     #print("X:", X)
     #print("cluster labels:", cluster_labels)
-    start = time.time()
+    start = time.perf_counter()
+    wall_start = time.time()
     silhouette_avg = silhouette_score(sample, cluster_labels)
-    end = time.time()
-    print("For k =", k, "The average silhouette_score is :", silhouette_avg + "\nExecution time for silhouette:", end - start)
+    end = time.perf_counter()
+    wall_end = time.time()
+    print("For k =", k, "The average silhouette_score is :", silhouette_avg, "\nExecution time for silhouette:", end - start, "\nWall clock time for silhouette:", wall_end - wall_start)
 
     if(visualisation):
         #for n_clusters in range_n_clusters:

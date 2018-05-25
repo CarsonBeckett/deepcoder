@@ -132,14 +132,18 @@ def main():
         # Pass formatted rank and elected leader as input-output examples to DeepCoder
 
         # Depth-first search (DFS)
-        dfs_start = time.time()
+        dfs_start = time.perf_counter()
+        dfs_wallclock_start = time.time()
         dfs_solution, dfs_steps_used = dfs(decoded_examples, 1, ctx, numpy.inf)
-        dfs_end = time.time()
+        dfs_end = time.perf_counter()
+        dfs_wallclock_end = time.time()
 
         # Sort and add enumerative search
-        saa_start = time.time()
+        saa_start = time.perf_counter()
+        saa_wallclock_start = time.time()
         saa_solution, saa_steps_used = sort_and_add(decoded_examples, 1, ctx, numpy.inf)
-        saa_end = time.time()
+        saa_end = time.perf_counter()
+        saa_wallclock_end = time.time()
 
         # Compare the elected leader from running the program inferred by DeepCoder to the ground truth from the oracle
         if dfs_solution:
@@ -157,12 +161,12 @@ def main():
             
         # Print DFS results
         print("\nDFS result:", dfs_solution)
-        print("Execution time:", dfs_end - dfs_start)
+        print("Execution time:", dfs_end - dfs_start, "\nWall time:", dfs_wallclock_end - dfs_wallclock_start)
         print("Steps used:", dfs_steps_used)
 
         # Print Sort and add results
         print("\nSort and add result:", saa_solution)
-        print("Execution time:", saa_end - saa_start)
+        print("Execution time:", saa_end - saa_start, "\nWall time:", saa_wallclock_end - saa_wallclock_start)
         print("Steps used:", saa_steps_used)
         
 main()

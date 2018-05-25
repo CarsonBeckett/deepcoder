@@ -38,6 +38,7 @@ from operator import itemgetter
 import os;
 import numpy;
 import random;
+import time
 
 """
 def silhouette_value(clusters, sample):
@@ -135,7 +136,16 @@ def cluster_nodes(visualisation=False):
             # Initiate the k-medoids algorithm with the sample and the initial medoids
             #kmedoids_instance = kmedoids(sample, initial_medoids[scenarioIndex], 0.001, metric=metric, ccore = True);
             kmedoids_instance = kmedoids(sample, initial_medoids, 0.001, metric=metric, ccore = True);
-            (time, result) = timedcall(kmedoids_instance.process);
+            #(time, result) = timedcall(kmedoids_instance.process);
+            time_start = time.perf_counter()
+            wall_time_start = time.time()
+            kmedoids_instance.process()
+            time_end = time.perf_counter()
+            wall_time_end = time.time()
+            total_time = time_end - time_start
+            total_wall_time = wall_time_end - wall_time_start
+            #print("Performance time for clustering:", total_time)
+            #print("Wall time for clustering:", wall_time_end - wall_time_start)
             
             # by default k-medoids returns representation CLUSTER_INDEX_LIST_SEPARATION
             clusters = kmedoids_instance.get_clusters()
@@ -163,14 +173,14 @@ def cluster_nodes(visualisation=False):
             #print("Medoid points:", medoidPoints)
 
             # Calculate the silhouette value
-            silhouettes.append((calculate_silhouette(sample, cluster_labels, medoidPoints, k, visualisation), k, time, clusters, medoids))
+            silhouettes.append((calculate_silhouette(sample, cluster_labels, medoidPoints, k, visualisation), k, total_time, total_wall_time, clusters, medoids))
             
             # Calculate Silhouette value
             #sil_val = silhouette_value(kmedoids_instance.get_clusters(), sample)
             #print("pyclustering silhouette value for", k, "clusters:", sil_val)
         
-        best_silhouette, best_k, best_time, best_clusters, best_medoids = max(silhouettes,key=itemgetter(0))
-        print("The best silhouette of", best_silhouette, "was achieved with k=" + str(best_k) + "\nExecution time of best clustering:", str(best_time))
+        best_silhouette, best_k, best_time, best_wall_time, best_clusters, best_medoids = max(silhouettes,key=itemgetter(0))
+        print("The best silhouette of", best_silhouette, "was achieved with k=" + str(best_k) + "\nExecution time of best clustering: " + str(best_time) + "\nWall time of best clustering: " + str(best_wall_time))
         #print("Best clusters:", best_clusters)
         #print("Best medoids:", best_medoids)
 
