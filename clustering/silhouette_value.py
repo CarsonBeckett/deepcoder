@@ -67,11 +67,7 @@ def calculate_silhouette(sample, cluster_labels, medoids, k, visualisation=False
     #clusterer = KMeans(n_clusters=k, random_state=10)
     #cluster_labels = clusterer.fit_predict(X) #OLD
 
-    # The silhouette_score gives the average value for all the samples.
-    # This gives a perspective into the density and separation of the formed
-    # clusters
-    #print("X:", X)
-    #print("cluster labels:", cluster_labels)
+    # Calculate the average silhouette value of all k clusters for this clustering
     start = time.perf_counter()
     wall_start = time.time()
     silhouette_avg = silhouette_score(sample, cluster_labels)
