@@ -41,7 +41,7 @@ def controlgroup():
 
 #range_n_clusters = [2, 3, 4, 5, 6]
 
-def calculate_silhouette(sample, cluster_labels, medoids, k, visualisation=False):
+def calculate_silhouette(sample, cluster_labels, medoids, k, scenario, visualisation=False):
     # Input pre-processing / sanity checking
     if(not isinstance(sample, np.ndarray)):
         sample = np.asarray(sample)
@@ -123,7 +123,7 @@ def calculate_silhouette(sample, cluster_labels, medoids, k, visualisation=False
             y_lower = y_upper + 10  # 10 for the 0 samples
 
         ax1.set_title("The silhouette plot for the various clusters.")
-        ax1.set_xlabel("The silhouette coefficient values")
+        ax1.set_xlabel("Silhouette coefficient values")
         ax1.set_ylabel("Cluster label")
 
         # The vertical line for average silhouette score of all the values
@@ -149,12 +149,12 @@ def calculate_silhouette(sample, cluster_labels, medoids, k, visualisation=False
             ax2.scatter(c[0], c[1], marker='$%d$' % i, alpha=1,
                         s=50, edgecolor='k')
 
-        ax2.set_title("The visualization of the clustered data.")
+        ax2.set_title("Visualisation of the clustered data.")
         ax2.set_xlabel("Feature space for the 1st feature")
         ax2.set_ylabel("Feature space for the 2nd feature")
 
-        plt.suptitle(("Silhouette analysis for K-medoids clustering on sample data "
-                      "with k = %d" % k),
+        plt.suptitle(("Silhouette analysis of K-medoids clustering on scenario %d sample data "
+                      "with k=%d" % (scenario+1, k)),
                      fontsize=14, fontweight='bold')
 
         plt.show()

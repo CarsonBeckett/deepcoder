@@ -181,7 +181,7 @@ def cluster_nodes(visualisation=False):
             #print("Medoid points:", medoidPoints)
 
             # Calculate the silhouette value
-            silhouettes.append((calculate_silhouette(sample, cluster_labels, medoidPoints, k, visualisation), k, clustering_time, clustering_wall_time, clusters, medoids))
+            silhouettes.append((calculate_silhouette(sample, cluster_labels, medoidPoints, k, scenarioIndex, visualisation), k, clustering_time, clustering_wall_time, clusters, medoids))
             
             # Calculate Silhouette value
             #sil_val = silhouette_value(kmedoids_instance.get_clusters(), sample)
