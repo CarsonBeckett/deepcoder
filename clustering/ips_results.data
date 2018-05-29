@@ -1,0 +1,50 @@
+Program synthesis
+
+DFS
+
+Synthesised program using DFS consistent with ground truth: True
+DFS result: LIST|MAXIMUM,0
+Steps used: 5
+
+Execution time:
+Min: 0.0008746657218807741
+Max: 0.0009643196334820914
+Mean: 0.0008882038225876669
+Standard deviation: 1.5593017505588157e-05
+Length: 30
+Confidence interval: (0.0008822903192311687, 0.000894117325944165)
+Margin of error: 5.913503356498161e-06 
+
+Wall time:
+Min: 0.0
+Max: 0.000997781753540039
+Mean: 0.000764624277750651
+Standard deviation: 0.00042182587342905794
+Length: 30
+Confidence interval: (0.0006046508333877142, 0.0009245977221135879)
+Margin of error: 0.00015997344436293685
+
+
+Sort and add
+
+Synthesised program using sort and add consistent with ground truth: True
+Sort and add result: LIST|MAXIMUM,0
+Steps used: [2, 3, 4, 5]
+
+Execution time:
+Min: 0.0012637961032417877
+Max: 0.0014422938007356834
+Mean: 0.0013154731219639467
+Standard deviation: 4.483077761558818e-05
+Length: 30
+Confidence interval: (0.0012984714765922798, 0.0013324747673356136)
+Margin of error: 1.700164537166691e-05 
+
+Wall time:
+Min: 0.0009970664978027344
+Max: 0.001995086669921875
+Mean: 0.0014626741409301757
+Standard deviation: 0.0004975484712408901
+Length: 30
+Confidence interval: (0.0012739836226485727, 0.0016513646592117787)
+Margin of error: 0.000188690518281603
