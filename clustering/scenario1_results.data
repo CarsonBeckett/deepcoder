@@ -1,0 +1,40 @@
+Scenario 1 
+Sample: C:\dvk\THESIS\code\deepcoder-le\clustering\scenario1.data
+
+The best silhouette value of 0.8485671038005586 was achieved with k=2
+
+Execution time of best clustering:
+Min: 0.0009097711691907762
+Max: 0.001547880184568239
+Mean: 0.0009594858834253646
+Standard deviation: 0.00011462705367411439
+Length: 30
+Confidence interval: (0.0009160146652083358, 0.0010029571016423934)
+Margin of error: 4.347121821702876e-05 
+
+Wall time of best clustering:
+Min: 0.0009968280792236328
+Max: 0.0009980201721191406
+Mean: 0.000997312863667806
+Standard deviation: 3.167968023299336e-07
+Length: 30
+Confidence interval: (0.000997192721498195, 0.0009974330058374172)
+Margin of error: 1.2014216961109096e-07 
+
+Total scenario execution time:
+Min: 0.17564956554308253
+Max: 0.19932926992281352
+Mean: 0.18465137635407014
+Standard deviation: 0.006266570210110066
+Length: 30
+Confidence interval: (0.18227483929458588, 0.1870279134135544)
+Margin of error: 0.0023765370594842627 
+
+Total scenario wall time:
+Min: 0.17553019523620605
+Max: 0.19946670532226562
+Mean: 0.18463955720265707
+Standard deviation: 0.006332602722507566
+Length: 30
+Confidence interval: (0.18223797794184385, 0.1870411364634703)
+Margin of error: 0.002401579260813219
