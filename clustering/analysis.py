@@ -12,6 +12,7 @@ from itertools import islice
 from fileinput import input as inp
 import sys
 import numpy as np, scipy.stats as st
+import matplotlib.pyplot as plt
 
 def process_output(index, in_file):
     samples = []
@@ -76,6 +77,70 @@ def process_output(index, in_file):
         
     return samples
 
+def plot_analysis(plot_information):
+    clusteringMeansList =[]
+    clusteringErrorList = []
+    for i in range(0, len(plot_information)-7, 4):
+        clusteringMeansList.append(plot_information[i][0])
+        clusteringErrorList.append(plot_information[i][1])
+
+    clusteringMeans = tuple(clusteringMeansList)
+    clusteringError = tuple(clusteringErrorList)
+    print("Clustering means:", clusteringMeans)
+    print("Clustering errors:", clusteringError)
+
+    scenarioMeansList =[]
+    scenarioErrorList = []
+    for i in range(2, len(plot_information)-5, 4):
+        scenarioMeansList.append(plot_information[i][0])
+        scenarioErrorList.append(plot_information[i][1])
+
+    scenarioMeans = tuple(scenarioMeansList)
+    scenarioError = tuple(scenarioErrorList)
+    print("Scenario means:", scenarioMeans)
+    print("Scenario errors:", scenarioError)
+
+    scenarioMeans = scenarioMeans[:5]
+    print("New scenario means:", scenarioMeans)
+    scenarioError = scenarioError[:5]
+    N = 1
+        
+    ind = np.arange(N)    # the x locations for the groups
+    width = 0.35       # the width of the bars: can also be len(x) sequence
+
+    p1 = plt.bar(ind, clusteringMeans[0], width, yerr=clusteringError[0])
+    #p2 = plt.bar(ind, scenarioMeans, width, bottom=clusteringMeans, yerr=scenarioError)
+    p2 = plt.bar(ind, scenarioMeans[0], width, bottom=clusteringMeans[0], yerr=scenarioError[0])
+
+    plt.ylabel('Run time in seconds')
+    plt.title('Average run times with confidence intervals')
+    plt.xticks(ind, ('Scenario 1',))
+    plt.yticks(np.arange(0, 0.225, 0.01))
+    #plt.legend([])
+    plt.legend((p1[0], p2[0]), ('Total scenario run time', 'Clustering run time'))
+
+    plt.show()
+
+    
+    """plt.rcdefaults()
+    fig, ax = plt.subplots()
+
+    # Example data
+    people = ('Tom', 'Dick', 'Harry', 'Slim', 'Jim')
+    y_pos = np.arange(len(people))
+    performance = 3 + 10 * np.random.rand(len(people))
+    error = np.random.rand(len(people))
+
+    ax.barh(y_pos, performance, xerr=error, align='center',
+            color='green', ecolor='black')
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(people)
+    ax.invert_yaxis()  # labels read top-to-bottom
+    ax.set_xlabel('Performance')
+    ax.set_title('How fast do you want to go today?')
+
+    plt.show()"""
+
 def analyse_output(sample):
     min_value = np.amin(sample)
     print("Min:", min_value)
@@ -98,8 +163,12 @@ def analyse_output(sample):
     error_margin = (confidence_interval[1] - confidence_interval[0]) / 2
     print("Margin of error:", error_margin, "\n")
 
+    return mean, error_margin
+
 def perform_statistical_analysis():
     files = ['scenario1_output.data', 'scenario2_output.data', 'scenario3_output.data', 'scenario4_output.data', 'scenario5_output.data', 'ips_output.data']
+
+    plot_information = []
     
     for file_index, file in enumerate(files):
         samples = process_output(file_index, file)
@@ -120,6 +189,10 @@ def perform_statistical_analysis():
                 elif(sample_index == 3):
                     print("Total scenario wall time:")
                 
-            analyse_output(sample)
+            plot_information.append(analyse_output(sample))
+
+    print(plot_information)            
+    plot_analysis(plot_information)
     
 perform_statistical_analysis()
+#plot_analysis()

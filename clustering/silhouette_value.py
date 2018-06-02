@@ -38,9 +38,6 @@ def controlgroup():
         cluster_labels = clusterer.fit_predict(X)
         visualise_silhouette(X, cluster_labels, clusterer.cluster_centers_, k)
 
-
-#range_n_clusters = [2, 3, 4, 5, 6]
-
 def calculate_silhouette(sample, cluster_labels, medoids, k, scenario, visualisation=False):
     # Input pre-processing / sanity checking
     if(not isinstance(sample, np.ndarray)):
