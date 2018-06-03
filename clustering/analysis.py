@@ -78,6 +78,7 @@ def process_output(index, in_file):
     return samples
 
 def plot_analysis(plot_information):
+    # Plot analysis of clustering
     clusteringMeansList =[]
     clusteringErrorList = []
     for i in range(0, len(plot_information)-7, 4):
@@ -103,24 +104,62 @@ def plot_analysis(plot_information):
     scenarioMeans = scenarioMeans[:5]
     print("New scenario means:", scenarioMeans)
     scenarioError = scenarioError[:5]
-    N = 1
-        
-    ind = np.arange(N)    # the x locations for the groups
+    print("New scenario error:", scenarioError)
+    
+    N_CLUSTERING = 1
+    ind = np.arange(N_CLUSTERING)    # the x locations for the groups
+    
     width = 0.35       # the width of the bars: can also be len(x) sequence
 
-    p1 = plt.bar(ind, clusteringMeans[0], width, yerr=clusteringError[0])
+    plot_format = [(0, 0.225, 0.01), (0, 0.235, 0.01), (0, 0.245, 0.02), (0, 0.365, 0.02), (0, 3.45, 0.2)]
+
+    for i in range(5):
+        p1 = plt.bar(ind, clusteringMeans[i], width, yerr=clusteringError[i])
+        #p2 = plt.bar(ind, scenarioMeans, width, bottom=clusteringMeans, yerr=scenarioError)
+        p2 = plt.bar(ind, scenarioMeans[i], width, bottom=clusteringMeans[i], yerr=scenarioError[i])
+
+        start, stop, tick = plot_format[i]
+        display = ('Scenario ' + str(i+1),)
+        plt.ylabel('Run time in seconds')
+        plt.title('Average run times with confidence intervals')
+        plt.xticks(ind, display)
+        plt.yticks(np.arange(start, stop, tick))
+        #plt.legend([])
+        plt.legend((p1[0], p2[0]), ('Clustering run time', 'Total scenario run time'))
+
+        plt.show()
+
+    # Plot analysis of IPS
+    dfs_mean, dfs_error = plot_information[20]
+    saa_mean, saa_error = plot_information[22]
+    print("DFS mean:", dfs_mean)
+    print("DFS error:", dfs_error)
+    print("Sort and add mean:", saa_mean)
+    print("Sort and add error:", saa_error)
+
+    N_IPS = 2
+    ind_ips = np.arange(N_IPS)
+
+    means = ()
+    error = ()
+
+    means += (dfs_mean,) + (saa_mean,)
+    error += (dfs_error,) + (saa_error,)
+    print("Means:", means)
+    print("Error:", error)
+    
+    p1 = plt.bar(ind_ips, means, width, yerr=error)
     #p2 = plt.bar(ind, scenarioMeans, width, bottom=clusteringMeans, yerr=scenarioError)
-    p2 = plt.bar(ind, scenarioMeans[0], width, bottom=clusteringMeans[0], yerr=scenarioError[0])
+    #p2 = plt.bar(ind_ips, saa_mean, width, yerr=saa_error)
 
     plt.ylabel('Run time in seconds')
     plt.title('Average run times with confidence intervals')
-    plt.xticks(ind, ('Scenario 1',))
-    plt.yticks(np.arange(0, 0.225, 0.01))
+    plt.xticks(ind_ips, ('DFS', 'Sort and add'))
+    plt.yticks(np.arange(0, 0.0015, 0.0001))
     #plt.legend([])
-    plt.legend((p1[0], p2[0]), ('Total scenario run time', 'Clustering run time'))
+    #plt.legend((p1[0], p2[0]), ('Total scenario run time', 'Clustering run time'))
 
     plt.show()
-
     
     """plt.rcdefaults()
     fig, ax = plt.subplots()
